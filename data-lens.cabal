@@ -7,16 +7,15 @@ license-file:  LICENSE
 author:        Edward A. Kmett
 maintainer:    Edward A. Kmett <ekmett@gmail.com>
 stability:     provisional
-homepage:      git://github.com/ekmett/lens/
+homepage:      git://github.com/ekmett/data-lens/
 copyright:     Copyright (C) 2008-2011 Edward A. Kmett
 synopsis:      Haskell 98 Lenses
 description:   Haskell 98 Lenses
 build-type:    Simple
-extra-source-files: coq/Store.v
 
 source-repository head
   type: git
-  location: git://github.com/ekmett/comonad-transformers.git
+  location: git://github.com/ekmett/data-lens.git
 
 flag DeriveDataTypeable
   manual: False
