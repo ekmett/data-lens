@@ -1,4 +1,4 @@
-name:          lens
+name:          data-lens
 category:      Control, Comonads
 version:       1.8.0
 license:       BSD3
