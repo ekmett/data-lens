@@ -1,13 +1,13 @@
 name:          data-lens
 category:      Control, Comonads
-version:       1.8.0.1
+version:       1.8.0.2
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
 author:        Edward A. Kmett
 maintainer:    Edward A. Kmett <ekmett@gmail.com>
 stability:     provisional
-homepage:      git://github.com/ekmett/data-lens/
+homepage:      http://github.com/ekmett/data-lens/
 copyright:     Copyright (C) 2008-2011 Edward A. Kmett
 synopsis:      Haskell 98 Lenses
 description:   Haskell 98 Lenses
