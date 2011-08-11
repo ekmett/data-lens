@@ -4,6 +4,10 @@ module Data.Lens.Common
   , lens -- build a lens from a getter and setter
   , iso  -- build a lens from an isomorphism
   -- * Functional API
+  , getL
+  , setL
+  , modL
+  -- * Operator API
   , (^$),  (^$!)   -- getter -- :: Lens a b -> a -> b
   , (^.),  (^!)    -- getter -- :: a -> Lens a b -> b
   , (^=),  (^!=)   -- setter -- :: Lens a b -> b -> (a -> a)
@@ -62,11 +66,13 @@ lens get set = Lens $ \a -> store (\b -> set b a) (get a)
 iso :: (a -> b) -> (b -> a) -> Lens a b
 iso f g = Lens (store g . f)
 
-infixr 0 ^$, ^$!
+-- | Gets the getter function from a lens.
+getL :: Lens a b -> a -> b
+getL (Lens f) a = pos (f a)
 
--- | functional getter
+infixr 0 ^$, ^$!
 (^$), (^$!)  :: Lens a b -> a -> b
-Lens f ^$ a = pos (f a)
+(^$) = getL
 Lens f ^$! a = pos (f $! a)
 
 infixr 9 ^., ^!
@@ -75,17 +81,24 @@ infixr 9 ^., ^!
 a ^. Lens f = pos (f a)
 a ^! Lens f = pos (f $! a)
 
+-- | Gets the setter function from a lens.
+setL :: Lens a b -> b -> a -> a
+setL (Lens f) b = peek b . f
+
 infixr 4 ^=, ^!=
--- | functional setter
 (^=), (^!=) :: Lens a b -> b -> a -> a
-Lens f ^= b = peek b . f
+(^=) = setL
 Lens f ^!= b = \a -> case f a of
   StoreT (Identity g) _ -> g $! b
+
+-- | Gets the modifier function from a lens.
+modL :: Lens a b -> (b -> b) -> a -> a
+modL (Lens f) g = peeks g . f
 
 infixr 4 ^%=, ^!%=
 -- | functional modify
 (^%=), (^!%=) :: Lens a b -> (b -> b) -> a -> a
-Lens f ^%= g = peeks g . f
+(^%=) = modL
 Lens f ^!%= g = \a -> case f a of
   StoreT (Identity h) b -> h $! g b
 
