@@ -11,10 +11,6 @@ module Data.Lens.Common
   , unitLens
   ) where
 
-import Control.Applicative
-import Control.Category
-import Data.Functor.Identity
-import Prelude hiding ((.), id)
 import Data.IntMap (IntMap)
 import qualified Data.Map as Map
 import Data.Set (Set)
