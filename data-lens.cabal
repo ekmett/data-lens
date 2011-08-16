@@ -53,4 +53,8 @@ library
     Data.Lens.Common
     Data.Lens.Simple
 
+  other-modules
+    Data.Lens.Util
+
   ghc-options: -Wall -O2 -fspec-constr
+
