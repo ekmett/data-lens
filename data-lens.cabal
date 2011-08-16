@@ -9,14 +9,13 @@ maintainer:    Edward A. Kmett <ekmett@gmail.com>
 stability:     provisional
 homepage:      http://github.com/ekmett/data-lens/
 copyright:     Copyright (C) 2008-2011 Edward A. Kmett
-synopsis:      Haskell 98 Lenses
-description:   Haskell 98 Lenses
+synopsis:      Composable purely functional references
+description:   Composable purely functional references
 build-type:    Simple
 
 source-repository head
   type: git
   location: git://github.com/ekmett/data-lens.git
-
 
 flag Rank2Types
   manual: False
