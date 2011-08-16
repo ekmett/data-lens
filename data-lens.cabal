@@ -1,6 +1,6 @@
 name:          data-lens
 category:      Control, Comonads
-version:       2.0.1
+version:       3.0
 license:       BSD3
 cabal-version: >= 1.6
 license-file:  LICENSE
@@ -17,30 +17,40 @@ source-repository head
   type: git
   location: git://github.com/ekmett/data-lens.git
 
-flag DeriveDataTypeable
+
+flag Rank2Types
+  manual: False
+  default: True
+
+flag UnboxedTuples
   manual: False
   default: True
 
 library
   build-depends: 
     base >= 4 && < 5,
-    comonad >= 1.1 && < 1.2,
-    comonad-transformers >= 2.0 && < 2.1,
     containers >= 0.3 && < 0.5,
-    contravariant >= 0.1.2 && < 0.2,
-    distributive >= 0.2 && < 0.3,
-    semigroupoids >= 1.2.4 && < 1.3,
     transformers >= 0.2.0 && <= 0.3
 
-  if flag(DeriveDataTypeable)
-    extensions: DeriveDataTypeable
-    cpp-options: -DLANGUAGE_DeriveDataTypeable
+  if flag(Rank2Types)
+    extensions: Rank2Types
+    cpp-options: -DLANGUAGE_Rank2Types
+    exposed-modules: Data.Lens.CPS
+
+  if flag(UnboxedTuples)
+    extensions: UnboxedTuples
+    cpp-options: -DLANGUAGE_UnboxedTuples
+    exposed-modules: Data.Lens.Unboxed
 
   extensions: CPP
 
   exposed-modules:
+    Data.Lens.Class
+    Data.Lens.Class.Internal
+    Data.Lens.Combinators
+    Data.Lens.Combinators.Trans.State.Lazy
+    Data.Lens.Combinators.Trans.State.Strict
     Data.Lens.Common
-    Data.Lens.Lazy
-    Data.Lens.Strict
+    Data.Lens.Simple
 
   ghc-options:      -Wall 
