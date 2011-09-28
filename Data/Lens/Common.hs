@@ -11,7 +11,7 @@ module Data.Lens.Common
   , (^$),  (^$!)   -- getter -- :: Lens a b -> a -> b
   , (^.),  (^!)    -- getter -- :: a -> Lens a b -> b
   , (^=),  (^!=)   -- setter -- :: Lens a b -> b -> (a -> a)
-  , (^%=), (^!%=)  -- modify -- :: Lens a b -> (b -> b) -> (a -> a) 
+  , (^%=), (^!%=)  -- modify -- :: Lens a b -> (b -> b) -> (a -> a)
   , (^%%=)         -- modify -- :: Functor f => Lens a b -> (b -> f b) -> a -> f a
   -- * Pseudo-imperatives
   , (^+=), (^!+=) -- addition
@@ -53,7 +53,7 @@ instance Semigroupoid Lens where
 instance Category Lens where
   id = Lens $ StoreT (pure id)
   Lens f . Lens g = Lens $ \a -> case g a of
-    StoreT wba b -> case f b of 
+    StoreT wba b -> case f b of
       StoreT wcb c -> StoreT ((.) <$> wba <*> wcb) c
 
 -- * Lens construction
@@ -144,10 +144,10 @@ intMapLens k = Lens $ \m -> store (\mv -> case mv of
 
 setLens :: Ord k => k -> Lens (Set k) Bool
 setLens k = Lens $ \m -> store (\mv ->
-    if mv then Set.delete k m else Set.insert k m
+    if mv then Set.insert k m else Set.delete k m
   ) (Set.member k m)
-    
+
 intSetLens :: Int -> Lens IntSet Bool
-intSetLens k = Lens $ \m -> store (\mv -> 
-    if mv then IntSet.delete k m else IntSet.insert k m
+intSetLens k = Lens $ \m -> store (\mv ->
+    if mv then IntSet.insert k m else IntSet.delete k m
   ) (IntSet.member k m)
