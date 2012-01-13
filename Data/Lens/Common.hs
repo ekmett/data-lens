@@ -14,6 +14,7 @@ module Data.Lens.Common
   , (^%=), (^!%=)  -- modify -- :: Lens a b -> (b -> b) -> (a -> a)
   , (^%%=)         -- modify -- :: Functor f => Lens a b -> (b -> f b) -> a -> f a
   , (***)          -- product
+  , (|||)          -- choice
   -- * Pseudo-imperatives
   , (^+=), (^!+=) -- addition
   , (^-=), (^!-=) -- subtraction
@@ -116,6 +117,17 @@ Lens f *** Lens g = Lens $ \(a, c) ->
   let x = f a
       y = g c
   in store (\(b, d) -> (peek b x, peek d y)) (pos x, pos y)
+
+infixr 2 |||
+-- lens choice
+(|||) :: Lens a c -> Lens b c -> Lens (Either a b) c
+Lens f ||| Lens g = Lens $ 
+  either (\a -> 
+    let x = f a
+    in store (Left . flip peek x) (pos x)) 
+         (\b -> 
+    let y = g b
+    in store (Right . flip peek y) (pos y))
 
 infixr 4 ^+=, ^!+=, ^-=, ^!-=, ^*=, ^!*=
 (^+=), (^!+=), (^-=), (^!-=), (^*=), (^!*=) :: Num b => Lens a b -> b -> a -> a
