@@ -15,6 +15,8 @@ module Data.Lens.Common
   , (^%%=)         -- modify -- :: Functor f => Lens a b -> (b -> f b) -> a -> f a
   , (***)          -- product
   , (|||)          -- choice
+  -- * Morphisms
+  , codiagonal
   -- * Pseudo-imperatives
   , (^+=), (^!+=) -- addition
   , (^-=), (^!-=) -- subtraction
@@ -128,6 +130,10 @@ Lens f ||| Lens g = Lens $
          (\b -> 
     let y = g b
     in store (Right . flip peek y) (pos y))
+
+-- codiagonal lens
+codiagonal :: Lens (Either a a) a
+codiagonal = id ||| id
 
 infixr 4 ^+=, ^!+=, ^-=, ^!-=, ^*=, ^!*=
 (^+=), (^!+=), (^-=), (^!-=), (^*=), (^!*=) :: Num b => Lens a b -> b -> a -> a
