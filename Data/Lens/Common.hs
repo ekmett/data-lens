@@ -13,6 +13,7 @@ module Data.Lens.Common
   , (^=),  (^!=)   -- setter -- :: Lens a b -> b -> (a -> a)
   , (^%=), (^!%=)  -- modify -- :: Lens a b -> (b -> b) -> (a -> a)
   , (^%%=)         -- modify -- :: Functor f => Lens a b -> (b -> f b) -> a -> f a
+  , (***)          -- product
   -- * Pseudo-imperatives
   , (^+=), (^!+=) -- addition
   , (^-=), (^!-=) -- subtraction
@@ -107,6 +108,14 @@ infixr 4 ^%%=
 (^%%=) :: Functor f => Lens a b -> (b -> f b) -> a -> f a
 Lens f ^%%= g = \a -> case f a of
   StoreT (Identity h) b -> h <$> g b
+
+infixr 3 ***
+-- | lens product
+(***) :: Lens a b -> Lens c d -> Lens (a, c) (b, d)
+Lens f *** Lens g = Lens $ \(a, c) -> 
+  let x = f a
+      y = g c
+  in store (\(b, d) -> (peek b x, peek d y)) (pos x, pos y)
 
 infixr 4 ^+=, ^!+=, ^-=, ^!-=, ^*=, ^!*=
 (^+=), (^!+=), (^-=), (^!-=), (^*=), (^!*=) :: Num b => Lens a b -> b -> a -> a
