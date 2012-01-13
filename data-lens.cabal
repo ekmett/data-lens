@@ -42,5 +42,6 @@ library
     Data.Lens.Common
     Data.Lens.Lazy
     Data.Lens.Strict
+    Data.Lens.Maybe
 
   ghc-options:      -Wall 
