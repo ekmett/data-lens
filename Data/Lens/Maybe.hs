@@ -11,6 +11,7 @@ module Data.Lens.Maybe
   ) where
 
 import Data.Lens.Common
+import Control.Comonad.Trans.Store
 import Data.Maybe
 
 -- | 
@@ -78,4 +79,16 @@ unset ::
   -> a
 unset l =
   l ^= Nothing
+
+setJust ::
+  MLens a b
+  -> Lens b c
+  -> a
+  -> c
+  -> a
+setJust (Lens f) g a c =
+  let a' = f a
+  in case pos a' of
+       Nothing -> a
+       Just b  -> peek (Just (setL g c b)) a' 
 
