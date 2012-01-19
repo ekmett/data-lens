@@ -25,6 +25,7 @@ module Data.Lens.Common
   , (^*=), (^!*=) -- multiplication
   , (^/=), (^!/=) -- division
   -- * Stock lenses
+  , newtypeLens
   , fstLens
   , sndLens
   , mapLens
@@ -36,6 +37,7 @@ module Data.Lens.Common
 import Control.Applicative
 import Control.Comonad.Trans.Store
 import Control.Category
+import Control.Newtype
 import Data.Functor.Identity
 import Data.Functor.Apply
 import Data.Semigroupoid
@@ -158,6 +160,9 @@ l ^/= r = l ^%= (/ r)
 l ^!/= r = l ^!%= (/ r)
 
 -- * Stock lenses
+
+newtypeLens :: Newtype a b => Lens a b
+newtypeLens = Lens (store pack . unpack)
 
 fstLens :: Lens (a,b) a
 fstLens = Lens $ \(a,b) -> store (\ a' -> (a', b)) a
