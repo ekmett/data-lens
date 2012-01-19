@@ -15,6 +15,8 @@ module Data.Lens.Common
   , (^%%=)         -- modify -- :: Functor f => Lens a b -> (b -> f b) -> a -> f a
   , (***)          -- product
   , (|||)          -- choice
+  , (>->)          -- Kleisli composition (get)
+  , (<-<)          -- Kleisli composition (get)
   -- * Morphisms
   , codiagonal
   -- * Pseudo-imperatives
@@ -130,6 +132,12 @@ Lens f ||| Lens g = Lens $
          (\b -> 
     let y = g b
     in store (Right . flip peek y) (pos y))
+
+(>->) :: Monad m => Lens a (m b) -> Lens b (m c) -> a -> (m c)
+f >-> g = \a -> getL f a >>= getL g
+
+(<-<) :: Monad m => Lens b (m c) -> Lens a (m b) -> a -> (m c)
+(<-<) = flip (>->)
 
 -- codiagonal lens
 codiagonal :: Lens (Either a a) a
