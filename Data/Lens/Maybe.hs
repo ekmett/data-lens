@@ -5,6 +5,7 @@ module Data.Lens.Maybe
   , mgetL
   , mset
   , unset
+  , setJust
   -- * Operator API
   , (^|), (^|!)   -- getter
   , (^|=), (^|!=) -- setter
@@ -80,6 +81,7 @@ unset ::
 unset l =
   l ^= Nothing
 
+-- | Sets the given c value on the lens if the given @Maybe@ lens gives a @Just@ value.
 setJust ::
   MLens a b
   -> Lens b c
