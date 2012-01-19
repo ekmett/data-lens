@@ -13,12 +13,19 @@ module Data.Lens.Common
   , (^=),  (^!=)   -- setter -- :: Lens a b -> b -> (a -> a)
   , (^%=), (^!%=)  -- modify -- :: Lens a b -> (b -> b) -> (a -> a)
   , (^%%=)         -- modify -- :: Functor f => Lens a b -> (b -> f b) -> a -> f a
+  , (***)          -- product
+  , (|||)          -- choice
+  , (>->)          -- Kleisli composition (get)
+  , (<-<)          -- Kleisli composition (get)
+  -- * Morphisms
+  , codiagonal
   -- * Pseudo-imperatives
   , (^+=), (^!+=) -- addition
   , (^-=), (^!-=) -- subtraction
   , (^*=), (^!*=) -- multiplication
   , (^/=), (^!/=) -- division
   -- * Stock lenses
+  , newtypeLens
   , fstLens
   , sndLens
   , mapLens
@@ -30,6 +37,7 @@ module Data.Lens.Common
 import Control.Applicative
 import Control.Comonad.Trans.Store
 import Control.Category
+import Control.Newtype
 import Data.Functor.Identity
 import Data.Functor.Apply
 import Data.Semigroupoid
@@ -108,6 +116,35 @@ infixr 4 ^%%=
 Lens f ^%%= g = \a -> case f a of
   StoreT (Identity h) b -> h <$> g b
 
+infixr 3 ***
+-- | lens product
+(***) :: Lens a b -> Lens c d -> Lens (a, c) (b, d)
+Lens f *** Lens g = Lens $ \(a, c) -> 
+  let x = f a
+      y = g c
+  in store (\(b, d) -> (peek b x, peek d y)) (pos x, pos y)
+
+infixr 2 |||
+-- lens choice
+(|||) :: Lens a c -> Lens b c -> Lens (Either a b) c
+Lens f ||| Lens g = Lens $ 
+  either (\a -> 
+    let x = f a
+    in store (Left . flip peek x) (pos x)) 
+         (\b -> 
+    let y = g b
+    in store (Right . flip peek y) (pos y))
+
+(>->) :: Monad m => Lens a (m b) -> Lens b (m c) -> a -> (m c)
+f >-> g = \a -> getL f a >>= getL g
+
+(<-<) :: Monad m => Lens b (m c) -> Lens a (m b) -> a -> (m c)
+(<-<) = flip (>->)
+
+-- codiagonal lens
+codiagonal :: Lens (Either a a) a
+codiagonal = id ||| id
+
 infixr 4 ^+=, ^!+=, ^-=, ^!-=, ^*=, ^!*=
 (^+=), (^!+=), (^-=), (^!-=), (^*=), (^!*=) :: Num b => Lens a b -> b -> a -> a
 l ^+= n = l ^%= (+ n)
@@ -123,6 +160,9 @@ l ^/= r = l ^%= (/ r)
 l ^!/= r = l ^!%= (/ r)
 
 -- * Stock lenses
+
+newtypeLens :: Newtype a b => Lens a b
+newtypeLens = Lens (store pack . unpack)
 
 fstLens :: Lens (a,b) a
 fstLens = Lens $ \(a,b) -> store (\ a' -> (a', b)) a
